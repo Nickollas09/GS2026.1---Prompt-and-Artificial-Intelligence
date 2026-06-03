@@ -1,0 +1,199 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyMsJXQKuuzWaT24Ai4fQIyh"
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "source": [
+        "# Global Solution GS2026.1: Prompt and Artificial Intelligence"
+      ],
+      "metadata": {
+        "id": "DdrCdsar05Xb"
+      }
+    },
+    {
+      "cell_type": "markdown",
+      "source": [
+        "## Lista de integrantes\n",
+        "\n",
+        "Nickollas Korner\n",
+        "RM: 569655\n",
+        "\n",
+        "Pierre Biason\n",
+        "RM: 569718\n",
+        "\n",
+        "Lucas Santana\n",
+        "RM: 573197"
+      ],
+      "metadata": {
+        "id": "bowxf8vBPm7m"
+      }
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "print(\" Baixando e instalando o Ollama no ambiente Linux do Colab...\")\n",
+        "!curl -fsSL https://ollama.com/install.sh | sh\n",
+        "\n",
+        "print(\"\\n Inicializando o servidor Ollama em segundo plano...\")\n",
+        "import subprocess\n",
+        "import time\n",
+        "\n",
+        "subprocess.Popen([\"ollama\", \"serve\"])\n",
+        "time.sleep(5)\n",
+        "\n",
+        "print(\"\\n Fazendo o download do modelo Llama 3.2 1B...\")\n",
+        "!ollama pull llama3.2:1b\n",
+        "\n",
+        "print(\"\\n Instalando a biblioteca Python oficial do Ollama...\")\n",
+        "!pip install ollama -q\n",
+        "\n",
+        "print(\"\\n Ambiente configurado com sucesso e pronto para operação!\")"
+      ],
+      "metadata": {
+        "id": "FKpIGOqKmQZG"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import random\n",
+        "import ollama\n",
+        "\n",
+        "def gerar_dados_missao():\n",
+        "    \"\"\"Gera dados simulados de telemetria conforme solicitado pelo edital.\"\"\"\n",
+        "    temperatura = random.randint(10, 115)\n",
+        "    energia = random.randint(5, 100)\n",
+        "    comunicacao = random.choice([\"Estável\", \"Instável\", \"Crítica\"])\n",
+        "    status_modulos = random.choice([\"Operacional\", \"Manutenção Requerida\", \"Falha de Hardware\"])\n",
+        "    return temperatura, energia, comunicacao, status_modulos\n",
+        "\n",
+        "def verificar_alertas_sistema(temperatura, energia, comunicacao, status_modulos):\n",
+        "    \"\"\"Estrutura lógica de tomada de decisão para regras de segurança automatizadas.\"\"\"\n",
+        "    alertas = []\n",
+        "    acoes = []\n",
+        "\n",
+        "    if temperatura > 90:\n",
+        "        alertas.append(\" CRÍTICO: Superaquecimento detectado nos módulos térmicos!\")\n",
+        "        acoes.append(\" SISTEMA: Ativando resfriamento líquido de emergência nas placas centrais.\")\n",
+        "    elif temperatura < 15:\n",
+        "        alertas.append(\" ALERTA: Temperatura abaixo da curva ideal de operação.\")\n",
+        "        acoes.append(\" SISTEMA: Ligando aquecedores internos do chassi secundário.\")\n",
+        "\n",
+        "    if energia < 20:\n",
+        "        alertas.append(\" CRÍTICO: Banco de baterias abaixo de 20% de carga residual!\")\n",
+        "        acoes.append(\" SISTEMA: Desligando subsistemas não essenciais e ativando Modo de Economia.\")\n",
+        "\n",
+        "    if comunicacao == \"Crítica\":\n",
+        "        alertas.append(\" CRÍTICO: Atenuação severa de sinal com a estação terrestre.\")\n",
+        "        acoes.append(\" SISTEMA: Redirecionando matriz de antenas para redundância orbital.\")\n",
+        "\n",
+        "    if status_modulos == \"Falha de Hardware\":\n",
+        "        alertas.append(\" CRÍTICO: Falha física estrutural detectada em módulo ativo.\")\n",
+        "        acoes.append(\" SISTEMA: Isolando barramento lógico da unidade afetada e chaveando para backup.\")\n",
+        "\n",
+        "    return alertas, acoes\n",
+        "\n",
+        "def obter_analise_ia(temperatura, energia, comunicacao, status_modulos):\n",
+        "    \"\"\"Envia os parâmetros unificados para o Llama 3.2 gerar a predição contextualizada.\"\"\"\n",
+        "    system_prompt = (\n",
+        "        \"Você é o software de IA do controle de missão espacial Mission Control AI. \"\n",
+        "        \"Sua função é analisar a telemetria recebida, prever cenários de risco iminentes e fornecer \"\n",
+        "        \"um diagnóstico operacional preciso, curto e de tom puramente técnico/científico.\"\n",
+        "    )\n",
+        "\n",
+        "    user_prompt = (\n",
+        "        f\"Métricas Atuais de Telemetria:\\n\"\n",
+        "        f\"- Temperatura dos Módulos: {temperatura}°C\\n\"\n",
+        "        f\"- Nível das Baterias: {energia}%\\n\"\n",
+        "        f\"- Status do Sinal de Rádio: {comunicacao}\\n\"\n",
+        "        f\"- Integridade Operacional: {status_modulos}\\n\"\n",
+        "        f\"Gere o relatório preditivo imediato.\"\n",
+        "    )\n",
+        "\n",
+        "    try:\n",
+        "        resposta = ollama.chat(\n",
+        "            model=\"llama3.2:1b\",\n",
+        "            messages=[\n",
+        "                {\"role\": \"system\", \"content\": system_prompt},\n",
+        "                {\"role\": \"user\", \"content\": user_prompt}\n",
+        "            ]\n",
+        "        )\n",
+        "        return resposta[\"message\"][\"content\"]\n",
+        "    except Exception as e:\n",
+        "        return f\"Erro de comunicação com o núcleo da IA: {e}\"\n",
+        "\n",
+        "def exibir_dashboard(temperatura, energia, comunicacao, status_modulos, alertas, acoes, analise_ia):\n",
+        "    \"\"\"Gera uma saída limpa, organizada e altamente visual no console do terminal.\"\"\"\n",
+        "    print(\"=\" * 70)\n",
+        "    print(\"               MISSION CONTROL AI - MONITORAMENTO OPERACIONAL  \")\n",
+        "    print(\"=\" * 70)\n",
+        "    print(f\" Temperatura Geral  : {temperatura}°C\")\n",
+        "    print(f\" Nível de Energia    : {energia}%\")\n",
+        "    print(f\" Sinal de Comunicação: {comunicacao}\")\n",
+        "    print(f\" Status dos Módulos  : {status_modulos}\")\n",
+        "    print(\"-\" * 70)\n",
+        "\n",
+        "    print(\" STATUS DE ALERTAS AUTOMÁTICOS DO SISTEMA:\")\n",
+        "    if alertas:\n",
+        "        for al, ac in zip(alertas, acoes):\n",
+        "            print(f\"{al}\\n -> {ac}\")\n",
+        "    else:\n",
+        "        print(\" Todos os sistemas operando dentro dos parâmetros de segurança nominais.\")\n",
+        "    print(\"-\" * 70)\n",
+        "\n",
+        "    print(\" DIAGNÓSTICO E PREDIÇÃO DA INTELIGÊNCIA ARTIVICIAL:\")\n",
+        "    print(analise_ia)\n",
+        "    print(\"=\" * 70)\n",
+        "\n",
+        "print(\"Rodando varredura inicial do sistema...\")\n",
+        "t, e, c, s = gerar_dados_missao()\n",
+        "alertas_s, acoes_s = verificar_alertas_sistema(t, e, c, s)\n",
+        "diagnostico_ia = obter_analise_ia(t, e, c, s)\n",
+        "exibir_dashboard(t, e, c, s, alertas_s, acoes_s, diagnostico_ia)"
+      ],
+      "metadata": {
+        "id": "M00-2t5_mXbd"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "\n",
+        "print(\" INJETANDO PARÂMETROS CRÍTICOS PARA VALIDAR RESPOSTAS DE EMERGÊNCIA \\n\")\n",
+        "\n",
+        "temp_critica = 98\n",
+        "energia_critica = 14\n",
+        "com_critica = \"Crítica\"\n",
+        "status_critico = \"Falha de Hardware\"\n",
+        "\n",
+        "alertas_c, acoes_c = verificar_alertas_sistema(temp_critica, energia_critica, com_critica, status_critico)\n",
+        "diagnostico_critico_ia = obter_analise_ia(temp_critica, energia_critica, com_critica, status_critico)\n",
+        "\n",
+        "exibir_dashboard(temp_critica, energia_critica, com_critica, status_critico, alertas_c, acoes_c, diagnostico_critico_ia)"
+      ],
+      "metadata": {
+        "id": "bkZwmRJYmaOB"
+      },
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
