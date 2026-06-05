@@ -52,3 +52,5 @@ O projeto foi inteiramente adaptado para rodar na nuvem sem a necessidade de nen
 
 ## Vídeo de Demonstração
 A apresentação em vídeo contendo a introdução de todos os membros do time e a validação do sistema operando com a geração de textos da IA em tempo real pode ser visualizada no link abaixo:
+
+https://youtu.be/VMu8N9PiyAU
